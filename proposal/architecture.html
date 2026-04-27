@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meridian Components — Architecture Overview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      padding: 2rem;
+    }
+    h1 { font-size: 1.875rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; }
+    .subtitle { color: #64748b; font-size: 0.938rem; margin-bottom: 2rem; }
+    h2 { font-size: 1.125rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem; }
+    h3 { font-size: 0.875rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    /* Diagram */
+    .diagram-container {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+    .diagram {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      min-width: 900px;
+    }
+    .layer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      position: relative;
+    }
+    .layer-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      margin-bottom: 0.5rem;
+    }
+    .box {
+      width: 100%;
+      max-width: 180px;
+      padding: 0.875rem 1rem;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.813rem;
+      font-weight: 600;
+      position: relative;
+    }
+    .box-browser  { background: #eff6ff; border: 2px solid #bfdbfe; color: #1d4ed8; }
+    .box-vue      { background: #f0fdf4; border: 2px solid #bbf7d0; color: #166534; }
+    .box-api      { background: #fff7ed; border: 2px solid #fed7aa; color: #9a3412; }
+    .box-data     { background: #fdf4ff; border: 2px solid #e9d5ff; color: #7e22ce; }
+    .box-port     { background: #f1f5f9; border: 1px dashed #94a3b8; color: #64748b; font-size: 0.75rem; padding: 0.375rem 0.75rem; }
+    .box-sub      { background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; font-size: 0.75rem; }
+
+    .arrow {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 0.5rem;
+      margin-top: 3rem;
+      color: #94a3b8;
+      font-size: 1.5rem;
+    }
+    .arrow-label {
+      font-size: 0.625rem;
+      color: #94a3b8;
+      text-align: center;
+      margin-top: 0.25rem;
+      white-space: nowrap;
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th { background: #f8fafc; padding: 0.625rem 0.875rem; text-align: left; font-weight: 600; color: #475569; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid #e2e8f0; }
+    td { padding: 0.625rem 0.875rem; border-bottom: 1px solid #f1f5f9; color: #334155; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #f8fafc; }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.688rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-green  { background: #d1fae5; color: #065f46; }
+    .badge-orange { background: #fed7aa; color: #9a3412; }
+    .badge-red    { background: #fecaca; color: #991b1b; }
+    .badge-blue   { background: #dbeafe; color: #1e40af; }
+    .badge-purple { background: #ede9fe; color: #5b21b6; }
+
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.813rem;
+      background: #f1f5f9;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      color: #3b82f6;
+    }
+
+    ul { padding-left: 1.25rem; }
+    li { margin-bottom: 0.375rem; font-size: 0.875rem; color: #475569; }
+    li strong { color: #0f172a; }
+
+    .risk-high   { border-left: 4px solid #ef4444; }
+    .risk-medium { border-left: 4px solid #f59e0b; }
+    .risk-low    { border-left: 4px solid #3b82f6; }
+    .risk-item { padding: 0.75rem 1rem; border-radius: 0 8px 8px 0; background: #f8fafc; margin-bottom: 0.5rem; font-size: 0.875rem; }
+    .risk-item strong { display: block; color: #0f172a; margin-bottom: 0.25rem; }
+    .risk-item span { color: #64748b; }
+
+    @media (max-width: 768px) {
+      .grid, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Meridian Components — Architecture Overview</h1>
+  <p class="subtitle">Current-state documentation · Prepared April 2026 · Catalyst Components engagement team</p>
+
+  <!-- System Diagram -->
+  <div class="diagram-container">
+    <h2>System Architecture Diagram</h2>
+    <div class="diagram" style="margin-top:1.5rem">
+
+      <div class="layer">
+        <div class="layer-label">Browser</div>
+        <div class="box box-browser">User Browser<br/><small style="font-weight:400">Chrome / Edge / Safari</small></div>
+      </div>
+
+      <div class="arrow">
+        →
+        <div class="arrow-label">HTTP<br/>localhost:3000</div>
+      </div>
+
+      <div class="layer">
+        <div class="layer-label">Frontend</div>
+        <div class="box box-vue">Vue 3 SPA<br/><small style="font-weight:400">Vite dev server</small></div>
+        <div class="box box-port">:3000</div>
+        <div class="box box-sub">Router (Vue Router)</div>
+        <div class="box box-sub">State (Composables)</div>
+        <div class="box box-sub">i18n (en / ja)</div>
+        <div class="box box-sub">api.js (Axios)</div>
+      </div>
+
+      <div class="arrow">
+        ⇄
+        <div class="arrow-label">REST/JSON<br/>CORS</div>
+      </div>
+
+      <div class="layer">
+        <div class="layer-label">Backend</div>
+        <div class="box box-api">FastAPI<br/><small style="font-weight:400">Python · uvicorn</small></div>
+        <div class="box box-port">:8001</div>
+        <div class="box box-sub">Pydantic models</div>
+        <div class="box box-sub">Filter helpers</div>
+        <div class="box box-sub">REST endpoints</div>
+      </div>
+
+      <div class="arrow">
+        →
+        <div class="arrow-label">Python<br/>in-memory</div>
+      </div>
+
+      <div class="layer">
+        <div class="layer-label">Data</div>
+        <div class="box box-data">JSON files<br/><small style="font-weight:400">server/data/</small></div>
+        <div class="box box-sub">inventory.json</div>
+        <div class="box box-sub">orders.json</div>
+        <div class="box box-sub">demand_forecasts.json</div>
+        <div class="box box-sub">spending.json</div>
+        <div class="box box-sub">purchase_orders.json</div>
+        <div class="box box-sub">backlog_items.json</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Key Facts -->
+  <div class="grid">
+    <div class="card">
+      <h2>Frontend Stack</h2>
+      <table>
+        <thead><tr><th>Component</th><th>Technology</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Framework</td><td><span class="badge badge-green">Vue 3</span></td><td>Composition API</td></tr>
+          <tr><td>Build tool</td><td>Vite 5</td><td>Dev on :3000</td></tr>
+          <tr><td>Routing</td><td>Vue Router 4</td><td>HTML5 history mode</td></tr>
+          <tr><td>HTTP client</td><td>Axios</td><td>Centralised in <code>api.js</code></td></tr>
+          <tr><td>i18n</td><td>Custom composable</td><td>EN + JA locales</td></tr>
+          <tr><td>Charts</td><td>CSS bar chart</td><td>No chart library dependency</td></tr>
+          <tr><td>Tests</td><td>Playwright</td><td>E2E via MCP server</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Backend Stack</h2>
+      <table>
+        <thead><tr><th>Component</th><th>Technology</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Framework</td><td><span class="badge badge-orange">FastAPI</span></td><td>Python 3.11+</td></tr>
+          <tr><td>Runtime</td><td>uvicorn</td><td>ASGI, single worker</td></tr>
+          <tr><td>Validation</td><td>Pydantic v2</td><td>All models typed</td></tr>
+          <tr><td>Data store</td><td>JSON files</td><td>Loaded to memory at startup</td></tr>
+          <tr><td>CORS</td><td>FastAPI middleware</td><td>Wildcard (dev only)</td></tr>
+          <tr><td>Package mgr</td><td>uv</td><td><code>uv run python main.py</code></td></tr>
+          <tr><td>Tests</td><td>pytest + httpx</td><td><code>tests/backend/</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- API Endpoints -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <h2>API Endpoints</h2>
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>Description</th><th>Filters</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/inventory</code></td><td>All inventory items</td><td>warehouse, category</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/inventory/{id}</code></td><td>Single inventory item</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/orders</code></td><td>All orders</td><td>warehouse, category, status, month</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/orders/{id}</code></td><td>Single order</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/demand</code></td><td>Demand forecasts</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/backlog</code></td><td>Backlog items + PO status</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/dashboard/summary</code></td><td>KPI summary</td><td>warehouse, category, status, month</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/spending/summary</code></td><td>Spending overview</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/spending/monthly</code></td><td>Monthly spending breakdown</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/spending/categories</code></td><td>Spending by category</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/spending/transactions</code></td><td>Recent transactions</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/reports/quarterly</code></td><td>Quarterly performance</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/reports/monthly-trends</code></td><td>Monthly revenue trends</td><td>—</td></tr>
+        <tr><td><span class="badge badge-blue">NEW</span></td><td><code>/api/restocking</code></td><td>Restocking recommendations</td><td>budget</td></tr>
+        <tr><td><span class="badge badge-orange">POST</span></td><td><code>/api/purchase-orders</code></td><td>Create purchase order</td><td>—</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/purchase-orders/{backlog_id}</code></td><td>PO by backlog item</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Frontend Views -->
+  <div class="grid">
+    <div class="card">
+      <h2>Frontend Views (client/src/views/)</h2>
+      <table>
+        <thead><tr><th>File</th><th>Route</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><code>Dashboard.vue</code></td><td>/</td><td><span class="badge badge-green">Stable</span></td></tr>
+          <tr><td><code>Inventory.vue</code></td><td>/inventory</td><td><span class="badge badge-green">Stable</span></td></tr>
+          <tr><td><code>Orders.vue</code></td><td>/orders</td><td><span class="badge badge-green">Stable</span></td></tr>
+          <tr><td><code>Spending.vue</code></td><td>/spending</td><td><span class="badge badge-green">Stable</span></td></tr>
+          <tr><td><code>Demand.vue</code></td><td>/demand</td><td><span class="badge badge-green">Stable</span></td></tr>
+          <tr><td><code>Reports.vue</code></td><td>/reports</td><td><span class="badge badge-blue">Remediated</span></td></tr>
+          <tr><td><code>Restocking.vue</code></td><td>/restocking</td><td><span class="badge badge-purple">New</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Shared Components &amp; Composables</h2>
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>FilterBar.vue</code></td><td>Global filter controls (warehouse, category, status, month)</td></tr>
+          <tr><td><code>LanguageSwitcher.vue</code></td><td>EN/JA locale toggle</td></tr>
+          <tr><td><code>ProfileMenu.vue</code></td><td>User avatar + tasks/profile dropdown</td></tr>
+          <tr><td><code>useFilters.js</code></td><td>Shared filter state (reactive refs)</td></tr>
+          <tr><td><code>useI18n.js</code></td><td>Translation helper — <code>t('key')</code></td></tr>
+          <tr><td><code>useAuth.js</code></td><td>Current user / mock auth</td></tr>
+          <tr><td><code>api.js</code></td><td>Centralised Axios calls for all endpoints</td></tr>
+          <tr><td><code>locales/en.js</code></td><td>English translation strings</td></tr>
+          <tr><td><code>locales/ja.js</code></td><td>Japanese translation strings</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Data Model -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <h2>Data Model (JSON / Pydantic)</h2>
+    <div class="grid-3" style="margin-top:1rem;margin-bottom:0">
+      <div>
+        <h3>InventoryItem</h3>
+        <ul>
+          <li><strong>id</strong> — string</li>
+          <li><strong>sku</strong> — string</li>
+          <li><strong>name</strong> — string</li>
+          <li><strong>category</strong> — Circuit Boards | Sensors | Actuators | Controllers | Power Supplies</li>
+          <li><strong>warehouse</strong> — San Francisco | London | Tokyo</li>
+          <li><strong>quantity_on_hand</strong> — int</li>
+          <li><strong>reorder_point</strong> — int</li>
+          <li><strong>unit_cost</strong> — float</li>
+          <li><strong>location</strong> — string</li>
+          <li><strong>last_updated</strong> — ISO datetime</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Order</h3>
+        <ul>
+          <li><strong>id</strong> — string</li>
+          <li><strong>order_number</strong> — string</li>
+          <li><strong>customer</strong> — string</li>
+          <li><strong>items</strong> — list of dicts</li>
+          <li><strong>status</strong> — Processing | Shipped | Delivered | Backordered</li>
+          <li><strong>order_date</strong> — YYYY-MM-DD</li>
+          <li><strong>expected_delivery</strong> — YYYY-MM-DD</li>
+          <li><strong>total_value</strong> — float</li>
+          <li><strong>warehouse</strong> — optional string</li>
+          <li><strong>category</strong> — optional string</li>
+        </ul>
+      </div>
+      <div>
+        <h3>DemandForecast</h3>
+        <ul>
+          <li><strong>id</strong> — string</li>
+          <li><strong>item_sku</strong> — string (FK to InventoryItem.sku)</li>
+          <li><strong>item_name</strong> — string</li>
+          <li><strong>current_demand</strong> — int</li>
+          <li><strong>forecasted_demand</strong> — int</li>
+          <li><strong>trend</strong> — increasing | stable | decreasing</li>
+          <li><strong>period</strong> — string (e.g. Q4-2025)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Known Gaps -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <h2>Known Gaps &amp; Risks</h2>
+    <div class="risk-item risk-high">
+      <strong>No persistent data store</strong>
+      <span>All data lives in Python memory; changes (purchase orders, tasks) are lost on server restart. Migration to PostgreSQL required for production.</span>
+    </div>
+    <div class="risk-item risk-high">
+      <strong>No authentication</strong>
+      <span>API has no auth layer — all endpoints are open. CORS wildcard (*) accepted. Unsuitable for network-accessible deployment.</span>
+    </div>
+    <div class="risk-item risk-medium">
+      <strong>Incomplete Options-to-Composition API migration</strong>
+      <span>Reports.vue was the last view still using Options API; now remediated. Remaining components use Composition API consistently.</span>
+    </div>
+    <div class="risk-item risk-medium">
+      <strong>Single backend process, no load balancing</strong>
+      <span>Uvicorn runs as a single process. Any crash takes the API offline. Consider gunicorn with multiple workers or a process manager for production.</span>
+    </div>
+    <div class="risk-item risk-low">
+      <strong>No error boundary on frontend</strong>
+      <span>A network failure mid-session shows an in-component error state but does not prevent navigation. Global error handling would improve resilience.</span>
+    </div>
+  </div>
+
+  <!-- Deployment topology -->
+  <div class="card">
+    <h2>Current Deployment Topology</h2>
+    <p style="font-size:0.875rem;color:#64748b;margin-bottom:1rem">The system is currently developer-local only. Both processes must be started manually.</p>
+    <table>
+      <thead><tr><th>Process</th><th>Start command</th><th>Port</th><th>Hot reload</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Frontend (Vite)</td>
+          <td><code>npm run dev</code> (from <code>client/</code>)</td>
+          <td>:3000</td>
+          <td>Yes — HMR</td>
+        </tr>
+        <tr>
+          <td>Backend (uvicorn)</td>
+          <td><code>uv run python main.py</code> (from <code>server/</code>)</td>
+          <td>:8001</td>
+          <td>No — restart required</td>
+        </tr>
+        <tr>
+          <td>Both at once</td>
+          <td><code>/start</code> slash command</td>
+          <td>—</td>
+          <td>Uses <code>scripts/start.sh</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top:2rem;font-size:0.75rem;color:#94a3b8;text-align:center">
+    Meridian Components Architecture Overview · Catalyst Components · April 2026
+  </p>
+
+</body>
+</html>

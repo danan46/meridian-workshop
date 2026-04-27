@@ -7,7 +7,9 @@ export default {
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
     companyName: 'Catalyst Components',
-    subtitle: 'Inventory Management System'
+    subtitle: 'Inventory Management System',
+    reports: 'Reports',
+    restocking: 'Restocking'
   },
 
   // Dashboard
@@ -46,6 +48,9 @@ export default {
       title: 'Inventory Shortages',
       noShortages: 'No inventory shortages - all orders can be fulfilled!',
       noData: 'No inventory data for selected filters',
+      actions: 'Actions',
+      createPO: 'Create PO',
+      viewPO: 'View PO',
       orderId: 'Order ID',
       sku: 'SKU',
       itemName: 'Item Name',
@@ -309,6 +314,75 @@ export default {
     english: 'English',
     japanese: 'Japanese',
     selectLanguage: 'Select Language'
+  },
+
+  // Backlog
+  backlog: {
+    title: 'Backlog Management',
+    description: 'Track and resolve inventory shortages',
+    highPriority: 'High Priority',
+    mediumPriority: 'Medium Priority',
+    lowPriority: 'Low Priority',
+    totalItems: 'Total Backlog Items'
+  },
+
+  // Reports
+  reports: {
+    title: 'Performance Reports',
+    description: 'View quarterly performance metrics and monthly trends',
+    loadError: 'Failed to load reports data',
+    quarterly: {
+      title: 'Quarterly Performance',
+      quarter: 'Quarter',
+      totalOrders: 'Total Orders',
+      totalRevenue: 'Total Revenue',
+      avgOrderValue: 'Avg Order Value',
+      fulfillmentRate: 'Fulfillment Rate'
+    },
+    monthly: {
+      chartTitle: 'Monthly Revenue Trend',
+      momTitle: 'Month-over-Month Analysis',
+      month: 'Month',
+      orders: 'Orders',
+      revenue: 'Revenue',
+      change: 'Change',
+      growthRate: 'Growth Rate'
+    },
+    summary: {
+      totalRevenue: 'Total Revenue (YTD)',
+      avgMonthlyRevenue: 'Avg Monthly Revenue',
+      totalOrders: 'Total Orders (YTD)',
+      bestQuarter: 'Best Performing Quarter'
+    }
+  },
+
+  // Restocking
+  restocking: {
+    title: 'Restocking Recommendations',
+    description: 'Purchase order recommendations based on stock levels and demand forecasts',
+    budgetLabel: 'Budget Ceiling ($)',
+    budgetPlaceholder: 'Enter budget limit...',
+    applyBudget: 'Apply',
+    clearBudget: 'Clear',
+    totalCost: 'Total Estimated Cost',
+    itemsRecommended: 'Items Recommended',
+    withinBudget: 'Within Budget',
+    overBudget: 'Over Budget',
+    loadError: 'Failed to load restocking recommendations',
+    noRecommendations: 'No restocking recommendations — all items are sufficiently stocked.',
+    table: {
+      sku: 'SKU',
+      itemName: 'Item Name',
+      category: 'Category',
+      warehouse: 'Warehouse',
+      currentStock: 'Current Stock',
+      reorderPoint: 'Reorder Point',
+      suggestedQty: 'Suggested Qty',
+      unitCost: 'Unit Cost',
+      totalCost: 'Total Cost',
+      demandTrend: 'Demand Trend',
+      priority: 'Priority'
+    }
   },
 
   // Common

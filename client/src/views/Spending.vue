@@ -80,11 +80,7 @@
         <div class="chart-container">
           <div class="bar-chart">
             <div class="y-axis">
-              <span>{{ currencySymbol }}25K</span>
-              <span>{{ currencySymbol }}20K</span>
-              <span>{{ currencySymbol }}15K</span>
-              <span>{{ currencySymbol }}10K</span>
-              <span>{{ currencySymbol }}5K</span>
+              <span v-for="label in yAxisLabels" :key="label">{{ label }}</span>
               <span>{{ currencySymbol }}0</span>
             </div>
             <div class="chart-area">
@@ -284,8 +280,7 @@ export default {
       return {
         totalRevenue,
         orderCount,
-        avgOrderValue,
-        revenueGrowth: 15.3 // Placeholder - could calculate from historical data
+        avgOrderValue
       }
     })
 
@@ -370,10 +365,6 @@ export default {
       }
     }
 
-    // Watch for period filter changes
-    watch([selectedPeriod], () => {
-      // Data will automatically update via computed properties
-    })
 
     const formatCurrency = (value) => {
       return formatCurrencyUtil(value, currentCurrency.value)
@@ -383,9 +374,28 @@ export default {
       return currentCurrency.value === 'JPY' ? '¥' : '$'
     })
 
+    const maxCostValue = computed(() => {
+      if (!allMonthlySpending.value.length) return 25000
+      const totals = allMonthlySpending.value.map(m =>
+        (m.procurement || 0) + (m.operational || 0) + (m.labor || 0) + (m.overhead || 0)
+      )
+      const max = Math.max(...totals)
+      // Round up to the nearest 5K for clean axis labels
+      return Math.ceil(max / 5000) * 5000 || 25000
+    })
+
+    const yAxisLabels = computed(() => {
+      const max = maxCostValue.value
+      const step = max / 5
+      const sym = currentCurrency.value === 'JPY' ? '¥' : '$'
+      return [max, max - step, max - step * 2, max - step * 3, max - step * 4].map(v => {
+        const k = v / 1000
+        return k >= 1 ? `${sym}${k % 1 === 0 ? k : k.toFixed(1)}K` : `${sym}${v}`
+      })
+    })
+
     const getBarHeight = (value) => {
-      const maxValue = 25000
-      return (value / maxValue) * 100
+      return (value / maxCostValue.value) * 100
     }
 
     const getRevenueBarHeight = (value) => {
@@ -475,6 +485,7 @@ export default {
       maxRevenueValue,
       formatCurrency,
       currencySymbol,
+      yAxisLabels,
       getBarHeight,
       getRevenueBarHeight,
       formatDate,

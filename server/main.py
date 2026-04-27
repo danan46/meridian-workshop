@@ -228,12 +228,15 @@ def get_recent_transactions():
     return recent_transactions
 
 @app.get("/api/reports/quarterly")
-def get_quarterly_reports():
-    """Get quarterly performance reports"""
-    # Calculate quarterly statistics from orders
+def get_quarterly_reports(
+    warehouse: Optional[str] = None,
+    category: Optional[str] = None
+):
+    """Get quarterly performance reports with optional warehouse/category filtering"""
+    filtered_orders = apply_filters(orders, warehouse, category)
     quarters = {}
 
-    for order in orders:
+    for order in filtered_orders:
         order_date = order.get('order_date', '')
         # Determine quarter
         if '2025-01' in order_date or '2025-02' in order_date or '2025-03' in order_date:
@@ -274,11 +277,15 @@ def get_quarterly_reports():
     return result
 
 @app.get("/api/reports/monthly-trends")
-def get_monthly_trends():
-    """Get month-over-month trends"""
+def get_monthly_trends(
+    warehouse: Optional[str] = None,
+    category: Optional[str] = None
+):
+    """Get month-over-month trends with optional warehouse/category filtering"""
+    filtered_orders = apply_filters(orders, warehouse, category)
     months = {}
 
-    for order in orders:
+    for order in filtered_orders:
         order_date = order.get('order_date', '')
         if not order_date:
             continue
@@ -303,6 +310,75 @@ def get_monthly_trends():
     result = list(months.values())
     result.sort(key=lambda x: x['month'])
     return result
+
+@app.get("/api/restocking")
+def get_restocking_recommendations(
+    budget: Optional[float] = None,
+    warehouse: Optional[str] = None,
+    category: Optional[str] = None
+):
+    """
+    Recommend purchase orders for items below or near their reorder point.
+    Cross-references demand forecasts to assign priority and suggested quantity.
+    If budget is supplied, marks items that would exceed it.
+    """
+    demand_by_sku = {f["item_sku"]: f for f in demand_forecasts}
+    filtered_items = apply_filters(inventory_items, warehouse, category)
+
+    recommendations = []
+    for item in filtered_items:
+        if item["quantity_on_hand"] > item["reorder_point"]:
+            continue
+
+        forecast = demand_by_sku.get(item["sku"])
+        trend = forecast["trend"] if forecast else "stable"
+        forecasted_demand = forecast["forecasted_demand"] if forecast else item["reorder_point"]
+
+        # Suggested quantity: replenish to 2× reorder point, boosted for increasing demand
+        replenish_to = item["reorder_point"] * 2
+        if trend == "increasing":
+            replenish_to = int(replenish_to * 1.25)
+        suggested_qty = max(replenish_to - item["quantity_on_hand"], 1)
+        total_cost = round(suggested_qty * item["unit_cost"], 2)
+
+        # Priority: high if stock < 50% of reorder_point or demand is increasing
+        shortage_ratio = item["quantity_on_hand"] / item["reorder_point"] if item["reorder_point"] else 1
+        if shortage_ratio < 0.5 or trend == "increasing":
+            priority = "high"
+        elif shortage_ratio < 0.8:
+            priority = "medium"
+        else:
+            priority = "low"
+
+        recommendations.append({
+            "id": item["id"],
+            "sku": item["sku"],
+            "name": item["name"],
+            "category": item["category"],
+            "warehouse": item["warehouse"],
+            "quantity_on_hand": item["quantity_on_hand"],
+            "reorder_point": item["reorder_point"],
+            "unit_cost": item["unit_cost"],
+            "suggested_qty": suggested_qty,
+            "total_cost": total_cost,
+            "demand_trend": trend,
+            "forecasted_demand": forecasted_demand,
+            "priority": priority
+        })
+
+    # Sort: high priority first, then by total_cost descending
+    priority_order = {"high": 0, "medium": 1, "low": 2}
+    recommendations.sort(key=lambda x: (priority_order[x["priority"]], -x["total_cost"]))
+
+    total_budget_needed = sum(r["total_cost"] for r in recommendations)
+
+    return {
+        "recommendations": recommendations,
+        "total_cost": round(total_budget_needed, 2),
+        "budget": budget,
+        "within_budget": budget is None or total_budget_needed <= budget
+    }
+
 
 if __name__ == "__main__":
     import uvicorn

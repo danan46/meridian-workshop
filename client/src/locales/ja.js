@@ -7,7 +7,9 @@ export default {
     finance: '財務',
     demandForecast: '需要予測',
     companyName: '触媒コンポーネンツ',
-    subtitle: '在庫管理システム'
+    subtitle: '在庫管理システム',
+    reports: 'レポート',
+    restocking: '補充'
   },
 
   // Dashboard
@@ -46,6 +48,9 @@ export default {
       title: '在庫不足',
       noShortages: '在庫不足なし - すべての注文を履行できます！',
       noData: '選択したフィルターのデータがありません',
+      actions: '操作',
+      createPO: '発注書作成',
+      viewPO: '発注書確認',
       orderId: '注文ID',
       sku: 'SKU',
       itemName: '品目名',
@@ -309,6 +314,75 @@ export default {
     english: 'English',
     japanese: '日本語',
     selectLanguage: '言語を選択'
+  },
+
+  // Backlog
+  backlog: {
+    title: 'バックログ管理',
+    description: '在庫不足の追跡と解決',
+    highPriority: '高優先度',
+    mediumPriority: '中優先度',
+    lowPriority: '低優先度',
+    totalItems: 'バックログ総件数'
+  },
+
+  // Reports
+  reports: {
+    title: 'パフォーマンスレポート',
+    description: '四半期業績指標と月次トレンドの表示',
+    loadError: 'レポートデータの読み込みに失敗しました',
+    quarterly: {
+      title: '四半期業績',
+      quarter: '四半期',
+      totalOrders: '総注文数',
+      totalRevenue: '総収益',
+      avgOrderValue: '平均注文額',
+      fulfillmentRate: '履行率'
+    },
+    monthly: {
+      chartTitle: '月次収益トレンド',
+      momTitle: '前月比分析',
+      month: '月',
+      orders: '注文数',
+      revenue: '収益',
+      change: '変化',
+      growthRate: '成長率'
+    },
+    summary: {
+      totalRevenue: '総収益（年初来）',
+      avgMonthlyRevenue: '月平均収益',
+      totalOrders: '総注文数（年初来）',
+      bestQuarter: '最高業績四半期'
+    }
+  },
+
+  // Restocking
+  restocking: {
+    title: '補充推奨',
+    description: '在庫レベルと需要予測に基づく発注推奨',
+    budgetLabel: '予算上限（$）',
+    budgetPlaceholder: '予算上限を入力...',
+    applyBudget: '適用',
+    clearBudget: 'クリア',
+    totalCost: '推定総コスト',
+    itemsRecommended: '推奨品目数',
+    withinBudget: '予算内',
+    overBudget: '予算超過',
+    loadError: '補充推奨の読み込みに失敗しました',
+    noRecommendations: '補充推奨なし — すべての品目は十分な在庫があります。',
+    table: {
+      sku: 'SKU',
+      itemName: '品目名',
+      category: 'カテゴリ',
+      warehouse: '倉庫',
+      currentStock: '現在の在庫',
+      reorderPoint: '再注文点',
+      suggestedQty: '推奨数量',
+      unitCost: '単価',
+      totalCost: '合計コスト',
+      demandTrend: '需要トレンド',
+      priority: '優先度'
+    }
   },
 
   // Common

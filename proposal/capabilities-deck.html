@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accenture — Meridian Components RFP</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --purple: #A100FF;
+    --purple-dark: #7400B8;
+    --purple-light: #E5B3FF;
+    --black: #000000;
+    --near-black: #1A1A1A;
+    --white: #FFFFFF;
+    --gray-100: #F7F7F7;
+    --gray-200: #E8E8E8;
+    --gray-500: #767676;
+    --gray-700: #494949;
+    --accent-green: #00C853;
+    --accent-amber: #FFB300;
+    --accent-red: #D50000;
+  }
+
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: #111;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .slide {
+    display: none;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+  }
+  .slide.active { display: flex; }
+
+  /* ── Layout helpers ── */
+  .content { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+
+  /* ── Accenture header bar ── */
+  .slide-header {
+    background: var(--black);
+    padding: 18px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--purple);
+    flex-shrink: 0;
+  }
+  .accenture-logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.5px;
+  }
+  .accenture-logo span { color: var(--purple); }
+  .slide-tag {
+    font-size: 11px;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* ── Slide body ── */
+  .slide-body {
+    flex: 1;
+    padding: 40px 56px;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .slide-body.dark {
+    background: var(--near-black);
+    color: var(--white);
+  }
+  .slide-body.purple {
+    background: var(--purple);
+    color: var(--white);
+  }
+  .slide-body.gray { background: var(--gray-100); }
+
+  /* ── Typography ── */
+  h1 { font-size: 42px; font-weight: 700; line-height: 1.1; color: var(--black); }
+  h2 { font-size: 30px; font-weight: 700; line-height: 1.2; color: var(--black); margin-bottom: 28px; }
+  h3 { font-size: 18px; font-weight: 700; color: var(--purple); margin-bottom: 10px; }
+  h4 { font-size: 14px; font-weight: 700; color: var(--gray-700); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  p { font-size: 15px; line-height: 1.6; color: var(--gray-700); }
+  .white h2, .dark h2 { color: var(--white); }
+  .white h3, .dark h3 { color: var(--purple-light); }
+  .white p, .dark p { color: rgba(255,255,255,0.85); }
+
+  /* ── Title slide ── */
+  .title-slide .slide-body {
+    background: var(--black);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  .title-slide .slide-body::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 500px;
+    height: 500px;
+    background: var(--purple);
+    border-radius: 50%;
+    opacity: 0.15;
+  }
+  .title-slide .slide-body::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: 200px;
+    width: 300px;
+    height: 300px;
+    background: var(--purple);
+    border-radius: 50%;
+    opacity: 0.08;
+  }
+  .title-kicker {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--purple);
+    margin-bottom: 20px;
+  }
+  .title-slide h1 { color: var(--white); font-size: 48px; max-width: 700px; }
+  .title-meta {
+    margin-top: 48px;
+    display: flex;
+    gap: 48px;
+  }
+  .title-meta-item label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+  .title-meta-item span { font-size: 15px; color: var(--white); font-weight: 600; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 24px;
+    border-left: 4px solid var(--purple);
+  }
+  .card.green { border-color: var(--accent-green); }
+  .card.amber { border-color: var(--accent-amber); }
+  .card.red { border-color: var(--accent-red); }
+  .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card p { font-size: 14px; }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: var(--black); color: var(--white); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--gray-200); color: var(--gray-700); }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--gray-100); }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge.req { background: #E8F5E9; color: #2E7D32; }
+  .badge.des { background: #E3F2FD; color: #1565C0; }
+  .badge.phase1 { background: var(--purple); color: white; }
+  .badge.phase2 { background: var(--purple-dark); color: white; }
+  .badge.phase3 { background: #E5B3FF; color: var(--purple-dark); }
+
+  /* ── Big stat ── */
+  .stat-row { display: flex; gap: 32px; margin-bottom: 32px; }
+  .stat { text-align: center; flex: 1; }
+  .stat .number { font-size: 52px; font-weight: 800; color: var(--purple); line-height: 1; }
+  .stat .label { font-size: 13px; color: var(--gray-500); margin-top: 6px; }
+
+  /* ── Timeline ── */
+  .timeline { display: flex; gap: 0; margin-top: 16px; }
+  .phase-block {
+    flex: 1;
+    background: var(--gray-100);
+    padding: 20px;
+    position: relative;
+    border-right: 2px solid var(--white);
+  }
+  .phase-block:first-child { border-radius: 8px 0 0 8px; background: #F3E5FF; }
+  .phase-block:nth-child(2) { background: #EDD6FF; }
+  .phase-block:last-child { border-radius: 0 8px 8px 0; background: #E5C6FF; border-right: none; }
+  .phase-block h4 { color: var(--purple-dark); font-size: 13px; }
+  .phase-block .phase-weeks { font-size: 11px; color: var(--gray-500); margin-bottom: 10px; }
+  .phase-block ul { list-style: none; padding: 0; }
+  .phase-block ul li { font-size: 13px; color: var(--gray-700); padding: 3px 0; padding-left: 14px; position: relative; }
+  .phase-block ul li::before { content: '→'; position: absolute; left: 0; color: var(--purple); font-size: 12px; }
+
+  /* ── Pipeline ── */
+  .pipeline { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; margin: 20px 0; }
+  .pipe-step {
+    background: var(--purple);
+    color: white;
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    flex: 1;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 14px 50%);
+  }
+  .pipe-step:first-child { clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%); }
+  .pipe-step:last-child { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 14px 50%); }
+  .pipe-step.alt { background: var(--purple-dark); }
+  .pipe-step.block { background: var(--accent-red); }
+  .pipe-step.pass { background: #2E7D32; }
+
+  /* ── Arch diagram ── */
+  .arch { font-family: monospace; font-size: 12px; background: var(--near-black); color: #00FF9C; padding: 20px 28px; border-radius: 8px; line-height: 1.7; white-space: pre; overflow: hidden; }
+
+  /* ── Cost table highlight ── */
+  .total-row td { font-weight: 700; background: #F3E5FF !important; color: var(--purple-dark); }
+
+  /* ── Navigation ── */
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 48px;
+    z-index: 100;
+  }
+  .nav-left { font-size: 12px; color: var(--gray-500); }
+  .nav-center { display: flex; align-items: center; gap: 16px; }
+  .nav button {
+    background: var(--purple);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .nav button:hover { background: var(--purple-dark); }
+  .nav button:disabled { background: var(--gray-500); cursor: not-allowed; }
+  .progress {
+    width: 200px;
+    height: 3px;
+    background: var(--gray-700);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--purple);
+    transition: width 0.3s ease;
+  }
+  #counter { font-size: 13px; color: var(--gray-500); min-width: 50px; text-align: center; }
+
+  /* ── Slide bottom padding for nav ── */
+  .slide { padding-bottom: 48px; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- ══ SLIDE 1: TITLE ══ -->
+  <div class="slide active title-slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Confidential — RFP Response MC-2026-0417</div>
+    </div>
+    <div class="slide-body">
+      <div style="position:relative;z-index:1">
+        <div class="title-kicker">Proposal — Inventory Dashboard Modernization</div>
+        <h1>Modernizing Meridian Components' Inventory Platform</h1>
+        <p style="color:rgba(255,255,255,0.7);font-size:17px;margin-top:20px;max-width:600px;">
+          A cloud-native, quality-first approach to fixing what's broken, building what's missing, and leaving your IT team fully in control.
+        </p>
+        <div class="title-meta">
+          <div class="title-meta-item">
+            <label>Submitted by</label>
+            <span>Accenture Team</span>
+          </div>
+          <div class="title-meta-item">
+            <label>Date</label>
+            <span>April 28, 2026</span>
+          </div>
+          <div class="title-meta-item">
+            <label>Response to</label>
+            <span>RFP #MC-2026-0417</span>
+          </div>
+          <div class="title-meta-item">
+            <label>Response deadline</label>
+            <span>May 8, 2026</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: AGENDA ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Agenda</div>
+    </div>
+    <div class="slide-body gray">
+      <h2>What we'll cover</h2>
+      <div class="three-col" style="margin-top:8px">
+        <div class="card">
+          <div class="card-icon">🎯</div>
+          <h3>The Challenge</h3>
+          <p>Understanding Meridian's situation, stakeholders, and the real blockers beneath the feature list.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏗️</div>
+          <h3>Our Solution</h3>
+          <p>Cloud-native AWS architecture, three delivery phases, and how we address R1–R4 plus D1–D3.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔒</div>
+          <h3>Quality & DevOps</h3>
+          <p>SonarQube, Checkmarx SAST, Playwright E2E — quality gates baked into every commit.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🗄️</div>
+          <h3>Data Engineering</h3>
+          <p>Assessment of the current JSON data layer and the migration path to PostgreSQL on Aurora.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📅</div>
+          <h3>Timeline</h3>
+          <p>Nine-week phased plan with clear deliverables and sign-off gates at each phase boundary.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">💶</div>
+          <h3>Investment</h3>
+          <p>Fixed-fee pricing per phase plus detailed AWS infrastructure cost estimates.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: THE CHALLENGE ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Understanding the challenge</div>
+    </div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div>
+          <h2>The real blockers aren't features</h2>
+          <p style="margin-bottom:20px">Meridian's inventory dashboard has been functional since 2024. The previous vendor left work unfinished. Three structural problems now block all forward progress:</p>
+          <div class="card red" style="margin-bottom:16px">
+            <h3 style="color:var(--accent-red)">1. Zero test coverage</h3>
+            <p>Meridian IT cannot safely approve any change — no test suite, no confidence. This single gap has made IT a gatekeeper, not an enabler.</p>
+          </div>
+          <div class="card amber" style="margin-bottom:16px">
+            <h3 style="color:var(--accent-amber)">2. Reports module defects</h3>
+            <p>At least eight logged defects. Filters don't apply correctly. Tokyo staff see English-only views. Operations data can't be trusted.</p>
+          </div>
+          <div class="card" style="margin-bottom:0">
+            <h3>3. No restocking capability</h3>
+            <p>VP Operations Tanaka's team makes purchase decisions manually every week. There is no tool-supported flow for reorder recommendations.</p>
+          </div>
+        </div>
+        <div>
+          <h2>Stakeholder map</h2>
+          <table>
+            <tr><th>Stakeholder</th><th>Role</th><th>Primary concern</th></tr>
+            <tr><td><strong>R. Tanaka</strong></td><td>VP Operations</td><td>Restocking feature, Reports reliability</td></tr>
+            <tr><td><strong>J. Okafor</strong></td><td>Director, Procurement</td><td>Timeline confidence, fixed-fee pricing</td></tr>
+            <tr><td><strong>Meridian IT</strong></td><td>Gatekeeper</td><td>Test coverage before any approval</td></tr>
+            <tr><td><strong>Tokyo team</strong></td><td>End users (~12)</td><td>Japanese language support (D2)</td></tr>
+          </table>
+          <div style="margin-top:24px;padding:20px;background:var(--gray-100);border-radius:8px;border-left:4px solid var(--purple)">
+            <h4>Our read on the previous vendor</h4>
+            <p style="margin-top:6px">Capable but over-committed. The failure mode was scope creep with no structured handoff. We will not repeat it. Phase-by-phase fixed fees with sign-off gates mean no cliff-hanger deliveries.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: APPROACH OVERVIEW ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Our approach</div>
+    </div>
+    <div class="slide-body gray">
+      <h2>Three phases — each one shippable</h2>
+      <div class="stat-row">
+        <div class="stat"><div class="number">9</div><div class="label">Delivery weeks</div></div>
+        <div class="stat"><div class="number">4</div><div class="label">Required items (R1–R4)</div></div>
+        <div class="stat"><div class="number">3</div><div class="label">Desired items (D1–D3)</div></div>
+        <div class="stat"><div class="number">0</div><div class="label">Cliff-hanger handoffs</div></div>
+      </div>
+      <div class="timeline">
+        <div class="phase-block">
+          <h4>Phase 1 — Foundation</h4>
+          <div class="phase-weeks">Weeks 1–3 · €62,000</div>
+          <ul>
+            <li>AWS infrastructure setup</li>
+            <li>Architecture docs (R4)</li>
+            <li>Reports remediation (R1)</li>
+            <li>Initial test suite (R3)</li>
+            <li>DB migration — JSON → Aurora</li>
+          </ul>
+        </div>
+        <div class="phase-block">
+          <h4>Phase 2 — New Capability</h4>
+          <div class="phase-weeks">Weeks 4–7 · €88,000</div>
+          <ul>
+            <li>Restocking engine (R2)</li>
+            <li>Data quality baseline</li>
+            <li>R3 test coverage extended</li>
+            <li>Checkmarx + Sonar gates live</li>
+          </ul>
+        </div>
+        <div class="phase-block">
+          <h4>Phase 3 — Polish & Handoff</h4>
+          <div class="phase-weeks">Weeks 8–9 · €42,000</div>
+          <ul>
+            <li>UI modernization (D1)</li>
+            <li>i18n — Tokyo locale (D2)</li>
+            <li>Dark mode (D3)</li>
+            <li>Production go-live</li>
+            <li>Knowledge transfer</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:20px;font-size:14px;color:var(--gray-500)">Each phase closes with a written sign-off from Meridian. No phase begins until the prior phase is signed off and scoped change requests are agreed.</p>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: AWS ARCHITECTURE ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Cloud-native AWS architecture</div>
+    </div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div>
+          <h2>Target architecture on AWS</h2>
+          <div class="arch">Users (SF / London / Tokyo)
+        │ HTTPS
+        ▼
+  ┌─────────────────┐
+  │  CloudFront CDN │ Vue SPA + API proxy
+  └────┬────────────┘
+       │ /api/*
+       ▼
+  ┌─────────────────┐
+  │   API Gateway   │ Throttling, WAF, metrics
+  └────┬────────────┘
+       ▼
+  ┌─────────────────────────┐
+  │  ECS Fargate (FastAPI)  │
+  │  Private subnet, 2 tasks│
+  └──────┬──────────────────┘
+         │
+   ┌─────┴──────┬────────────┐
+   ▼            ▼            ▼
+Aurora      Secrets       S3
+PostgreSQL  Manager    (exports)
+Serverless
+   │
+CloudWatch + X-Ray</div>
+        </div>
+        <div>
+          <h2 style="margin-bottom:16px">Service rationale</h2>
+          <table>
+            <tr><th>Service</th><th>Why</th></tr>
+            <tr><td><strong>CloudFront</strong></td><td>Low-latency SPA for 3 global warehouses</td></tr>
+            <tr><td><strong>ECS Fargate</strong></td><td>Serverless containers — no EC2 mgmt</td></tr>
+            <tr><td><strong>Aurora Serverless v2</strong></td><td>Auto-scales; replaces JSON files</td></tr>
+            <tr><td><strong>API Gateway</strong></td><td>Throttling, metrics, WAF integration</td></tr>
+            <tr><td><strong>Secrets Manager</strong></td><td>Zero credentials in code or env vars</td></tr>
+            <tr><td><strong>CDK (TypeScript)</strong></td><td>All infra as code; per-env stacks</td></tr>
+            <tr><td><strong>CloudWatch + X-Ray</strong></td><td>Unified observability, distributed tracing</td></tr>
+            <tr><td><strong>WAF</strong></td><td>OWASP Top 10 ruleset, rate limiting</td></tr>
+          </table>
+          <div style="margin-top:16px;padding:14px 18px;background:#F3E5FF;border-radius:6px">
+            <p style="font-size:13px;color:var(--purple-dark)"><strong>Environments:</strong> dev (auto-deploy on merge) · staging (manual promotion) · prod (manual approval). ECS and Aurora scale to zero in non-prod off-hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6: DATA ENGINEERING ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Data engineering assessment</div>
+    </div>
+    <div class="slide-body">
+      <h2>From JSON files to a structured data layer</h2>
+      <div class="two-col" style="margin-top:8px">
+        <div>
+          <h3>Current state — critical gaps</h3>
+          <table style="margin-bottom:16px">
+            <tr><th>Issue</th><th>Impact</th></tr>
+            <tr><td>No schema enforcement</td><td>Silent data corruption</td></tr>
+            <tr><td>In-memory filtering only</td><td>Full dataset loaded per request</td></tr>
+            <tr><td>No ACID transactions</td><td>R2 writes have no safety net</td></tr>
+            <tr><td>No referential integrity</td><td>SKU–warehouse relations implicit</td></tr>
+            <tr><td>No audit trail</td><td>No history of who changed what</td></tr>
+            <tr><td>No multi-user concurrency</td><td>Concurrent writes = undefined behavior</td></tr>
+          </table>
+          <h3>Target data model (key entities)</h3>
+          <div style="font-family:monospace;font-size:12px;background:var(--gray-100);padding:14px;border-radius:6px;line-height:1.8;color:var(--gray-700)">
+Product → Inventory (qty, warehouse)<br>
+Warehouse (id, name, locale, timezone)<br>
+Order (product, supplier, qty, status)<br>
+Supplier (name, preferred, lead_time)<br>
+DemandForecast (product, warehouse, period)<br>
+SpendingTransaction (supplier, amount, date)
+          </div>
+        </div>
+        <div>
+          <h3>Migration plan — 4 steps</h3>
+          <div class="card" style="margin-bottom:12px;border-color:#7400B8">
+            <h4 style="color:#7400B8">Step 1 — Repository abstraction (Phase 1, Day 1)</h4>
+            <p style="font-size:13px">Introduce repository pattern in Python. All data access moves through interfaces — JSON files remain behind them. Zero user impact, enables clean swap later.</p>
+          </div>
+          <div class="card" style="margin-bottom:12px;border-color:#7400B8">
+            <h4 style="color:#7400B8">Step 2 — Schema + data load (Phase 1 close)</h4>
+            <p style="font-size:13px">CDK provisions Aurora Serverless v2. Migration scripts load JSON into normalised schema. Validation report shared with Meridian before go-live.</p>
+          </div>
+          <div class="card" style="margin-bottom:12px;border-color:#7400B8">
+            <h4 style="color:#7400B8">Step 3 — Repository swap (Phase 1 → 2)</h4>
+            <p style="font-size:13px">SQLAlchemy implementations replace JSON implementations. All tests run against PostgreSQL from here. JSON files archived to S3.</p>
+          </div>
+          <div class="card" style="border-color:#7400B8">
+            <h4 style="color:#7400B8">Step 4 — Data quality baseline (Phase 2)</h4>
+            <p style="font-size:13px">Completeness, freshness, and consistency report shared with Tanaka before R2 development. Restocking engine needs trustworthy demand data.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7: R1 + R2 ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">R1 — Reports · R2 — Restocking</div>
+    </div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div>
+          <h2>R1 — Reports Remediation</h2>
+          <p style="margin-bottom:16px">Audit first. Every defect is registered and agreed before a single fix is shipped.</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <div style="background:var(--purple);color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;flex-shrink:0">1</div>
+              <div><strong>Defect audit</strong> — written register agreed with Meridian before remediation begins</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <div style="background:var(--purple);color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;flex-shrink:0">2</div>
+              <div><strong>Filter system</strong> — end-to-end trace of all 4 filters per report view; broken bindings repaired in Vue and FastAPI</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <div style="background:var(--purple);color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;flex-shrink:0">3</div>
+              <div><strong>i18n gaps</strong> — all strings audited, missing keys added, Tokyo locale prioritised</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <div style="background:var(--purple);color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;flex-shrink:0">4</div>
+              <div><strong>Options → Composition API</strong> migration scoped to Reports only</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <div style="background:var(--purple);color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;flex-shrink:0">5</div>
+              <div><strong>Regression tests</strong> — every fixed defect gets a Playwright test. R1 and R3 developed in parallel.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h2>R2 — Restocking Recommendations</h2>
+          <p style="margin-bottom:16px">Stockout-risk-ranked purchase order suggestions, generated in one click.</p>
+          <div style="background:var(--gray-100);padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px;line-height:2">
+            days_remaining = stock / avg_daily_demand<br>
+            risk_score = 1 / days_remaining<br>
+            order_qty = max(0, reorder_target − stock)<br>
+            cost = order_qty × unit_cost
+          </div>
+          <p style="font-size:14px;margin-bottom:16px">Candidates ranked by risk score (high → low). Greedy selection until budget ceiling reached.</p>
+          <table>
+            <tr><th>UI Component</th><th>Detail</th></tr>
+            <tr><td>Budget input panel</td><td>Ceiling + warehouse selector</td></tr>
+            <tr><td>Ranked table</td><td>Risk colour: 🔴 &lt;7d · 🟡 &lt;30d · 🟢 ≥30d</td></tr>
+            <tr><td>Live spend tracker</td><td>Cumulative vs. ceiling</td></tr>
+            <tr><td>CSV export</td><td>Full recommendation basket</td></tr>
+          </table>
+          <div style="margin-top:12px;padding:12px 16px;background:#E8F5E9;border-radius:6px;font-size:13px;color:#2E7D32">
+            <strong>New endpoint:</strong> POST /api/restocking/recommendations<br>Body: warehouse + budget_ceiling → ranked items + excluded count
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 8: QUALITY ENGINEERING ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Quality engineering</div>
+    </div>
+    <div class="slide-body gray">
+      <h2>Quality gates on every commit</h2>
+      <div class="pipeline">
+        <div class="pipe-step">Lint &amp;<br>Unit Tests</div>
+        <div class="pipe-step alt">SonarQube<br>Scan</div>
+        <div class="pipe-step block">Checkmarx<br>SAST</div>
+        <div class="pipe-step">Docker<br>Build + ECR</div>
+        <div class="pipe-step alt">CDK<br>Deploy → dev</div>
+        <div class="pipe-step pass">Playwright<br>E2E Tests</div>
+        <div class="pipe-step">Manual<br>→ Staging/Prod</div>
+      </div>
+      <div class="three-col" style="margin-top:20px">
+        <div class="card">
+          <h3>SonarQube</h3>
+          <table style="font-size:13px">
+            <tr><th>Metric</th><th>Gate</th></tr>
+            <tr><td>Line coverage (new code)</td><td>≥ 80%</td></tr>
+            <tr><td>Duplicated lines</td><td>&lt; 3%</td></tr>
+            <tr><td>Maintainability</td><td>Rating A</td></tr>
+            <tr><td>Security rating</td><td>Rating A</td></tr>
+            <tr><td>New blockers / criticals</td><td>0</td></tr>
+          </table>
+          <p style="margin-top:10px;font-size:13px">Scans Python backend + Vue frontend. Results posted as PR comment. Merge blocked on gate failure.</p>
+        </div>
+        <div class="card">
+          <h3>Checkmarx SAST</h3>
+          <table style="font-size:13px">
+            <tr><th>Severity</th><th>Action</th></tr>
+            <tr><td>🔴 HIGH</td><td>Block merge — must resolve</td></tr>
+            <tr><td>🟡 MEDIUM</td><td>PR warning + backlog ticket</td></tr>
+            <tr><td>⚪ LOW / INFO</td><td>Informational only</td></tr>
+          </table>
+          <p style="margin-top:10px;font-size:13px">OWASP Top 10 ruleset + custom FastAPI injection patterns. Full SAST reports stored S3, 90-day retention.</p>
+        </div>
+        <div class="card">
+          <h3>Playwright E2E (R3)</h3>
+          <table style="font-size:13px">
+            <tr><th>Phase</th><th>Coverage</th></tr>
+            <tr><td>Phase 1</td><td>All filters, Reports regressions, smoke</td></tr>
+            <tr><td>Phase 2</td><td>Restocking flows, budget ceiling, CSV</td></tr>
+            <tr><td>Phase 3</td><td>Full nav smoke, i18n locale switch</td></tr>
+          </table>
+          <p style="margin-top:10px;font-size:13px">Runs against dev env post-deploy. Failure blocks promotion to staging. Videos retained 7 days on S3.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9: DEVOPS ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">DevOps & CI/CD</div>
+    </div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div>
+          <h2>CI/CD pipeline</h2>
+          <p style="margin-bottom:20px">GitHub Actions triggers on every PR and merge. Infrastructure changes go through the same gates as application code.</p>
+          <table>
+            <tr><th>Environment</th><th>Trigger</th><th>Purpose</th></tr>
+            <tr><td><span class="badge phase1">dev</span></td><td>Every merge to main</td><td>Integration + Playwright</td></tr>
+            <tr><td><span class="badge phase2">staging</span></td><td>Manual from dev</td><td>UAT with Meridian</td></tr>
+            <tr><td><span class="badge phase3">prod</span></td><td>Manual approval</td><td>Live system</td></tr>
+          </table>
+          <div style="margin-top:20px;padding:16px;background:var(--gray-100);border-radius:8px">
+            <h4>Cost saving</h4>
+            <p style="font-size:13px;margin-top:6px">ECS Fargate and Aurora Serverless v2 scale to zero in dev/staging off-hours. Non-prod environments cost ~€80/month combined — not three times production.</p>
+          </div>
+        </div>
+        <div>
+          <h2>Infrastructure as Code</h2>
+          <p style="margin-bottom:16px">All AWS resources defined in CDK TypeScript stacks. Reviewed in the same PR as application code.</p>
+          <div style="font-family:monospace;font-size:12px;background:var(--near-black);color:#A3E635;padding:18px;border-radius:8px;line-height:2">
+infra/<br>
+├── bin/app.ts         <span style="color:#6B7280"># env parameterisation</span><br>
+├── lib/<br>
+│   ├── network-stack.ts   <span style="color:#6B7280"># VPC, subnets</span><br>
+│   ├── database-stack.ts  <span style="color:#6B7280"># Aurora, Secrets</span><br>
+│   ├── compute-stack.ts   <span style="color:#6B7280"># ECS, ALB</span><br>
+│   ├── frontend-stack.ts  <span style="color:#6B7280"># S3, CloudFront</span><br>
+│   └── pipeline-stack.ts  <span style="color:#6B7280"># GitHub OIDC role</span><br>
+└── cdk.json
+          </div>
+          <div style="margin-top:16px">
+            <h3>Container strategy</h3>
+            <p style="font-size:13px">Multi-stage Dockerfile; images tagged with Git SHA and pushed to ECR. Rollback = task definition update, no redeployment. ECS rolling deployment with health check gates.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 10: TIMELINE ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Timeline</div>
+    </div>
+    <div class="slide-body gray">
+      <h2 style="margin-bottom:10px">Gantt — 9-week delivery plan</h2>
+      <table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:11px">
+        <colgroup>
+          <col style="width:195px">
+          <col><col><col><col><col><col><col><col><col>
+        </colgroup>
+        <thead>
+          <tr>
+            <th style="background:#000;color:#fff;text-align:left;padding:5px 8px;font-size:11px;font-weight:700">Deliverable</th>
+            <th style="background:#000;color:#fff;text-align:center;padding:5px 3px;font-size:11px">W1</th>
+            <th style="background:#000;color:#fff;text-align:center;padding:5px 3px;font-size:11px">W2</th>
+            <th style="background:#000;color:#fff;text-align:center;padding:5px 3px;font-size:11px">W3</th>
+            <th style="background:#000;color:#fff;text-align:center;padding:5px 3px;font-size:11px">W4</th>
+            <th style="background:#000;color:#fff;text-align:center;padding:5px 3px;font-size:11px">W5</th>
+            <th style="background:#000;color:#fff;text-align:center;padding:5px 3px;font-size:11px">W6</th>
+            <th style="background:#000;color:#fff;text-align:center;padding:5px 3px;font-size:11px">W7</th>
+            <th style="background:#000;color:#fff;text-align:center;padding:5px 3px;font-size:11px">W8</th>
+            <th style="background:#000;color:#fff;text-align:center;padding:5px 3px;font-size:11px">W9</th>
+          </tr>
+          <tr>
+            <td style="background:#E8E8E8;padding:3px 8px;font-size:10px;font-weight:700;color:#494949"></td>
+            <td colspan="3" style="background:#F3E5FF;color:#7400B8;font-size:10px;font-weight:700;text-align:center;padding:3px;text-transform:uppercase;letter-spacing:1px">Phase 1 — Foundation</td>
+            <td colspan="4" style="background:#EDD6FF;color:#7400B8;font-size:10px;font-weight:700;text-align:center;padding:3px;text-transform:uppercase;letter-spacing:1px">Phase 2 — New Capability</td>
+            <td colspan="2" style="background:#E5C6FF;color:#7400B8;font-size:10px;font-weight:700;text-align:center;padding:3px;text-transform:uppercase;letter-spacing:1px">Phase 3 — Handoff</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">Project kickoff & AWS infra setup</td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">CI/CD + SonarQube + Checkmarx</td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">R1 — Defect audit & register</td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">DB repository abstraction</td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">R1 — Reports remediation</td>
+            <td style="padding:2px"></td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">R4 — Architecture documentation</td>
+            <td style="padding:2px"></td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">R3 — Initial browser test suite</td>
+            <td style="padding:2px"></td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">DB migration: JSON → Aurora PostgreSQL</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#A100FF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:2px solid #7400B8;background:#FEFCE8">
+            <td style="padding:4px 8px;font-size:11px;font-weight:700;color:#7400B8">★ Phase 1 sign-off</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#FFB300;border-radius:2px;text-align:center;font-size:12px;color:#fff;font-weight:700;line-height:20px">★</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">Data quality baseline</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#7400B8;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">R2 — Restocking API + algorithm</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#7400B8;border-radius:2px;padding:2px"></td>
+            <td style="background:#7400B8;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">R2 — Restocking frontend (Vue)</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#7400B8;border-radius:2px;padding:2px"></td>
+            <td style="background:#7400B8;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">R3 — Restocking test coverage</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#7400B8;border-radius:2px;padding:2px"></td>
+            <td style="background:#7400B8;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">Staging UAT with Tanaka's team</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#7400B8;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:2px solid #7400B8;background:#FEFCE8">
+            <td style="padding:4px 8px;font-size:11px;font-weight:700;color:#7400B8">★ Phase 2 sign-off</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#FFB300;border-radius:2px;text-align:center;font-size:12px;color:#fff;font-weight:700;line-height:20px">★</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">D1 — UI prototype + ratification</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#C56AFF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">D1 — UI implementation</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#C56AFF;border-radius:2px;padding:2px"></td>
+            <td style="background:#C56AFF;border-radius:2px;padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">D2 — i18n / Japanese locale</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#C56AFF;border-radius:2px;padding:2px"></td>
+            <td style="background:#C56AFF;border-radius:2px;padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">D3 — Dark mode (isolated branch)</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#C56AFF;border-radius:2px;padding:2px"></td>
+            <td style="padding:2px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #E8E8E8">
+            <td style="padding:4px 8px;color:#494949;font-size:11px">Production go-live + knowledge transfer</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#C56AFF;border-radius:2px;padding:2px"></td>
+          </tr>
+          <tr style="background:#FEFCE8">
+            <td style="padding:4px 8px;font-size:11px;font-weight:700;color:#7400B8">★ Phase 3 sign-off</td>
+            <td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td><td style="padding:2px"></td>
+            <td style="background:#FFB300;border-radius:2px;text-align:center;font-size:12px;color:#fff;font-weight:700;line-height:20px">★</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;display:flex;gap:20px;align-items:center">
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:12px;background:#A100FF;border-radius:2px"></div><span style="font-size:11px;color:#494949">Phase 1</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:12px;background:#7400B8;border-radius:2px"></div><span style="font-size:11px;color:#494949">Phase 2</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:12px;background:#C56AFF;border-radius:2px"></div><span style="font-size:11px;color:#494949">Phase 3</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:12px;background:#FFB300;border-radius:2px;text-align:center;font-size:9px;color:white;font-weight:700;line-height:12px">★</div><span style="font-size:11px;color:#494949">Milestone / sign-off</span></div>
+        <div style="margin-left:auto;padding:8px 14px;background:#F3E5FF;border-radius:6px;font-size:12px;color:#7400B8"><strong>Start:</strong> within 1 week of signature &nbsp;·&nbsp; <strong>Go-live:</strong> ~10 weeks from signature</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 11: AWS COSTS ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">AWS infrastructure costs</div>
+    </div>
+    <div class="slide-body">
+      <h2>Monthly AWS infrastructure estimate — production</h2>
+      <div class="two-col" style="align-items:start;margin-top:8px">
+        <div>
+          <table>
+            <tr><th>Service</th><th>Specification</th><th>On-Demand</th><th>Reserved (1yr)</th></tr>
+            <tr><td>CloudFront</td><td>10 GB transfer, 2M req</td><td>$12</td><td>$12</td></tr>
+            <tr><td>S3</td><td>20 GB storage + ops</td><td>$5</td><td>$5</td></tr>
+            <tr><td>API Gateway</td><td>HTTP API, 2M requests</td><td>$2</td><td>$2</td></tr>
+            <tr><td>ECS Fargate</td><td>2 tasks, 0.5 vCPU / 1 GB</td><td>$68</td><td>$45</td></tr>
+            <tr><td>Aurora PG Serverless v2</td><td>0.5–2 ACU, 20 GB</td><td>$135</td><td>$95</td></tr>
+            <tr><td>Secrets Manager</td><td>5 secrets, 10K calls</td><td>$4</td><td>$4</td></tr>
+            <tr><td>CloudWatch + X-Ray</td><td>10 GB logs, 100K traces</td><td>$23</td><td>$23</td></tr>
+            <tr><td>WAF</td><td>Web ACL + OWASP ruleset</td><td>$20</td><td>$20</td></tr>
+            <tr><td>Route 53</td><td>1 hosted zone, 1M queries</td><td>$1</td><td>$1</td></tr>
+            <tr class="total-row"><td colspan="2"><strong>Production total</strong></td><td><strong>~$270/mo</strong></td><td><strong>~$207/mo</strong></td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <h3>Non-production (dev + staging)</h3>
+            <p style="font-size:14px">~<strong>$80/month</strong> combined. ECS Fargate scales to zero off-hours. Aurora Serverless pauses at 0 ACU when idle. Not three times production.</p>
+          </div>
+          <div class="card" style="margin-bottom:16px">
+            <h3>First-year infrastructure total</h3>
+            <p style="font-size:14px">On-demand: <strong>~$4,200</strong><br>With 1-year Savings Plan: <strong>~$3,200</strong></p>
+          </div>
+          <div class="card">
+            <h3>Tooling (one-time / annual)</h3>
+            <p style="font-size:14px">
+              SonarCloud Team: ~$600/year<br>
+              Checkmarx: per enterprise agreement<br>
+              AWS CDK: open source (free)<br>
+              GitHub Actions: included in repo plan
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 12: PROJECT PRICING ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Project investment</div>
+    </div>
+    <div class="slide-body gray">
+      <h2 style="margin-bottom:10px">Fixed-fee pricing — Big4 Europe rates</h2>
+      <div class="two-col" style="align-items:start;margin-top:4px">
+        <div>
+          <h3 style="margin-bottom:8px">Daily billing rates (Big4 Europe)</h3>
+          <table style="margin-bottom:14px">
+            <tr><th>Role</th><th>Accenture Level</th><th>Day Rate</th></tr>
+            <tr><td>Solutions Architect (Lead)</td><td>Manager</td><td><strong>€2,500</strong></td></tr>
+            <tr><td>Full-Stack Developer</td><td>Senior Consultant</td><td><strong>€1,800</strong></td></tr>
+            <tr><td>Data Engineer</td><td>Senior Consultant</td><td><strong>€1,900</strong></td></tr>
+            <tr><td>DevSecOps Engineer</td><td>Senior Consultant</td><td><strong>€1,700</strong></td></tr>
+            <tr><td>QA Engineer</td><td>Consultant</td><td><strong>€1,400</strong></td></tr>
+          </table>
+          <h3 style="margin-bottom:8px">Fixed-fee by phase</h3>
+          <table>
+            <tr><th>Phase</th><th>Scope</th><th>Duration</th><th>Avg FTE</th><th>Fixed Fee</th></tr>
+            <tr><td><span class="badge phase1">Phase 1</span></td><td>AWS, R4, R1, R3, DB migration</td><td>3 wks</td><td>~3.75</td><td><strong>€125,000</strong></td></tr>
+            <tr><td><span class="badge phase2">Phase 2</span></td><td>R2 restocking, R3 ext., data QA</td><td>4 wks</td><td>~4.25</td><td><strong>€165,000</strong></td></tr>
+            <tr><td><span class="badge phase3">Phase 3</span></td><td>D1–D3, go-live, KT</td><td>2 wks</td><td>~2.5</td><td><strong>€60,000</strong></td></tr>
+            <tr class="total-row"><td colspan="4"><strong>Total — all phases, all items</strong></td><td><strong>€350,000</strong></td></tr>
+          </table>
+          <div style="margin-top:12px;padding:12px 16px;background:#E8F5E9;border-radius:6px">
+            <p style="font-size:12px;color:#2E7D32"><strong>Rates are all-inclusive</strong> — travel, tooling, overhead, margin. No hidden extras. Fixed-fee per phase means cost overruns are Accenture's risk, not Meridian's.</p>
+          </div>
+        </div>
+        <div>
+          <h3 style="margin-bottom:8px">Team allocation by phase</h3>
+          <table style="margin-bottom:14px">
+            <tr><th>Role</th><th>€/day</th><th>Ph.1</th><th>Ph.2</th><th>Ph.3</th></tr>
+            <tr><td>Solutions Architect</td><td>€2,500</td><td>100%</td><td>100%</td><td>100%</td></tr>
+            <tr><td>Full-Stack Developer</td><td>€1,800</td><td>100%</td><td>100%</td><td>100%</td></tr>
+            <tr><td>Data Engineer</td><td>€1,900</td><td>75%</td><td>100%</td><td>25%</td></tr>
+            <tr><td>DevSecOps Engineer</td><td>€1,700</td><td>100%</td><td>50%</td><td>25%</td></tr>
+            <tr><td>QA Engineer</td><td>€1,400</td><td>50%</td><td>75%</td><td>50%</td></tr>
+          </table>
+          <h3 style="margin-bottom:8px">Payment schedule</h3>
+          <table style="margin-bottom:14px">
+            <tr><th>Milestone</th><th>%</th><th>Amount</th></tr>
+            <tr><td>Contract signature</td><td>20%</td><td><strong>€70,000</strong></td></tr>
+            <tr><td>Phase 1 sign-off</td><td>30%</td><td><strong>€105,000</strong></td></tr>
+            <tr><td>Phase 2 sign-off</td><td>30%</td><td><strong>€105,000</strong></td></tr>
+            <tr><td>Phase 3 sign-off + go-live</td><td>20%</td><td><strong>€70,000</strong></td></tr>
+          </table>
+          <div class="card" style="border-color:#7400B8">
+            <h3>Available as change requests</h3>
+            <p style="font-size:12px">
+              Additional D1 revision rounds: €4,500 each<br>
+              CI/CD into Meridian's own pipeline: €8,000–12,000<br>
+              WCAG 2.1 AA audit + remediation: €15,000–22,000<br>
+              DB migration (if deferred from Ph.1): €12,000–18,000
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 13: WHY ACCENTURE ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Why Accenture</div>
+    </div>
+    <div class="slide-body dark white">
+      <h2>Why Accenture Team</h2>
+      <div class="three-col" style="margin-top:8px">
+        <div class="card" style="background:rgba(255,255,255,0.07);border-color:var(--purple);color:white">
+          <div class="card-icon">☁️</div>
+          <h3>AWS depth</h3>
+          <p>Certified AWS architects. We don't propose what we've never shipped. CloudFront → Fargate → Aurora is a pattern we run in production for clients at Meridian's scale.</p>
+        </div>
+        <div class="card" style="background:rgba(255,255,255,0.07);border-color:var(--purple);color:white">
+          <div class="card-icon">🔐</div>
+          <h3>Security-first delivery</h3>
+          <p>Checkmarx SAST and SonarQube quality gates are not add-ons. They are in the pipeline from day one — not scanned once before handoff.</p>
+        </div>
+        <div class="card" style="background:rgba(255,255,255,0.07);border-color:var(--purple);color:white">
+          <div class="card-icon">📊</div>
+          <h3>Data engineering</h3>
+          <p>We assessed the JSON data layer honestly. The repository pattern migration is the right approach at Meridian's scale — not over-engineered, not deferred.</p>
+        </div>
+        <div class="card" style="background:rgba(255,255,255,0.07);border-color:var(--purple);color:white">
+          <div class="card-icon">🚢</div>
+          <h3>We don't over-commit</h3>
+          <p>The previous vendor's failure mode was scope creep. Our phase-gate model means scope is agreed in writing before work begins — and doesn't drift.</p>
+        </div>
+        <div class="card" style="background:rgba(255,255,255,0.07);border-color:var(--purple);color:white">
+          <div class="card-icon">🧪</div>
+          <h3>Test coverage as foundation</h3>
+          <p>R3 isn't a deliverable — it's the unlock. Tests first means IT can approve changes. Everything after Phase 1 is built on a foundation IT trusts.</p>
+        </div>
+        <div class="card" style="background:rgba(255,255,255,0.07);border-color:var(--purple);color:white">
+          <div class="card-icon">🌏</div>
+          <h3>Global delivery experience</h3>
+          <p>We've run multi-locale deployments including Japanese i18n. The Tokyo team's experience is not a footnote — it's a named deliverable in Phase 3.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 14: NEXT STEPS ══ -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="accenture-logo">Accenture<span>.</span></div>
+      <div class="slide-tag">Next steps</div>
+    </div>
+    <div class="slide-body purple white">
+      <div style="max-width:700px;margin:0 auto;text-align:center">
+        <h2 style="font-size:38px;margin-bottom:16px">Ready to start within one week of signature</h2>
+        <p style="font-size:17px;opacity:0.9;margin-bottom:48px">Questions to procurement close April 28. Proposal due May 8. We're available for a capabilities presentation at your convenience.</p>
+        <div style="display:flex;flex-direction:column;gap:16px;text-align:left">
+          <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.15);padding:16px 24px;border-radius:8px">
+            <div style="font-size:24px">📋</div>
+            <div>
+              <div style="font-weight:700;font-size:15px">Review our proposal package</div>
+              <div style="opacity:0.8;font-size:14px">Executive summary · Technical approach · Timeline · Pricing — all in the RFP response package</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.15);padding:16px 24px;border-radius:8px">
+            <div style="font-size:24px">📅</div>
+            <div>
+              <div style="font-weight:700;font-size:15px">Schedule a capabilities call</div>
+              <div style="opacity:0.8;font-size:14px">30 minutes with Tanaka and IT to walk through the data migration and R3 approach in detail</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.15);padding:16px 24px;border-radius:8px">
+            <div style="font-size:24px">✍️</div>
+            <div>
+              <div style="font-weight:700;font-size:15px">Submit clarifying questions by April 28</div>
+              <div style="opacity:0.8;font-size:14px">procurement@meridiancomponents.example — per RFP §6, responses shared with all bidders</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:36px;opacity:0.7;font-size:13px">
+          Accenture Team · RFP #MC-2026-0417 · April 28, 2026 · Confidential
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.deck -->
+
+<!-- ══ NAVIGATION ══ -->
+<div class="nav">
+  <div class="nav-left">Accenture — Meridian Components · Confidential</div>
+  <div class="nav-center">
+    <button id="btnPrev" onclick="prev()">← Prev</button>
+    <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+    <span id="counter">1 / 14</span>
+    <button id="btnNext" onclick="next()">Next →</button>
+  </div>
+  <div style="font-size:12px;color:var(--gray-500)">← → to navigate</div>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+    document.getElementById('progressFill').style.width = ((current + 1) / total * 100) + '%';
+    document.getElementById('btnPrev').disabled = current === 0;
+    document.getElementById('btnNext').disabled = current === total - 1;
+  }
+
+  function next() { if (current < total - 1) show(current + 1); }
+  function prev() { if (current > 0) show(current - 1); }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+  });
+
+  show(0);
+</script>
+</body>
+</html>

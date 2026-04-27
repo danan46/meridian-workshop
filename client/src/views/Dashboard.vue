@@ -15,10 +15,10 @@
             <div class="kpi-header">
               <span class="kpi-label">{{ t('dashboard.kpi.inventoryTurnover') }}</span>
             </div>
-            <div class="kpi-value">4.2</div>
-            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 4.5 (-6.67%)</div>
+            <div class="kpi-value">{{ inventoryTurnover }}</div>
+            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 4.5 ({{ inventoryTurnover >= 4.5 ? '+' : '' }}{{ ((inventoryTurnover / 4.5 - 1) * 100).toFixed(1) }}%)</div>
             <div class="kpi-progress-bar">
-              <div class="kpi-progress" style="width: 93.33%"></div>
+              <div class="kpi-progress" :style="{ width: Math.min((inventoryTurnover / 4.5 * 100), 100) + '%' }"></div>
             </div>
           </div>
 
@@ -59,10 +59,10 @@
             <div class="kpi-header">
               <span class="kpi-label">{{ t('dashboard.kpi.avgProcessingTime') }}</span>
             </div>
-            <div class="kpi-value">2.8</div>
-            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 3.0 (-6.67%)</div>
+            <div class="kpi-value">{{ orderHealthMetrics.avgFulfillmentDays.toFixed(1) }}</div>
+            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 3.0 ({{ orderHealthMetrics.avgFulfillmentDays <= 3.0 ? '' : '+' }}{{ (orderHealthMetrics.avgFulfillmentDays - 3.0).toFixed(2) }})</div>
             <div class="kpi-progress-bar">
-              <div class="kpi-progress success" style="width: 93.33%"></div>
+              <div class="kpi-progress success" :style="{ width: Math.min((3.0 / Math.max(orderHealthMetrics.avgFulfillmentDays, 0.1) * 100), 100) + '%' }"></div>
             </div>
           </div>
         </div>
@@ -180,7 +180,7 @@
                   <th>{{ t('dashboard.inventoryShortages.shortage') }}</th>
                   <th>{{ t('dashboard.inventoryShortages.daysDelayed') }}</th>
                   <th>{{ t('dashboard.inventoryShortages.priority') }}</th>
-                  <th>Actions</th>
+                  <th>{{ t('dashboard.inventoryShortages.actions') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -214,14 +214,14 @@
                       @click.stop="openPOModal(item)"
                       class="po-button create"
                     >
-                      Create PO
+                      {{ t('dashboard.inventoryShortages.createPO') }}
                     </button>
                     <button
                       v-else
                       @click.stop="viewPO(item)"
                       class="po-button view"
                     >
-                      View PO
+                      {{ t('dashboard.inventoryShortages.viewPO') }}
                     </button>
                   </td>
                 </tr>
@@ -337,8 +337,27 @@ export default {
       getCurrentFilters
     } = useFilters()
 
-    const ordersData = ref({ fulfilled: 187, goal: 200 })
-    const fillRate = ref(96.8)
+    const ordersData = computed(() => {
+      const total = allOrders.value.length
+      const fulfilled = statusData.value.delivered
+      // Goal: 80% of total orders, minimum 1 to avoid division by zero
+      const goal = Math.max(Math.round(total * 0.8), 1)
+      return { fulfilled, goal }
+    })
+
+    const fillRate = computed(() => {
+      const total = allOrders.value.length
+      if (total === 0) return 0
+      const notBackordered = total - (statusData.value.backordered || 0)
+      return parseFloat(((notBackordered / total) * 100).toFixed(1))
+    })
+
+    const inventoryTurnover = computed(() => {
+      const items = inventoryItems.value.length
+      if (items === 0) return 0
+      // Delivered orders per inventory SKU — a simple proxy that reacts to filters
+      return parseFloat((statusData.value.delivered / items).toFixed(1))
+    })
 
     const revenueGoal = computed(() => {
       // $800K per month, so if looking at all months (12 months), goal is 12 * 800K = 9.6M
@@ -686,6 +705,7 @@ export default {
       summary,
       ordersData,
       fillRate,
+      inventoryTurnover,
       statusData,
       orderHealthMetrics,
       categoryData,
