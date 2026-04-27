@@ -259,7 +259,7 @@ export default {
 .card-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -269,21 +269,21 @@ export default {
 }
 
 .reports-table th {
-  background: #f8fafc;
+  background: var(--bg-hover);
   padding: 0.75rem;
   text-align: left;
   font-weight: 600;
-  color: #64748b;
-  border-bottom: 2px solid #e2e8f0;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border);
 }
 
 .reports-table td {
   padding: 0.75rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border);
 }
 
 .reports-table tr:hover {
-  background: #f8fafc;
+  background: var(--bg-hover);
 }
 
 .chart-container {
@@ -329,7 +329,7 @@ export default {
 .bar-label {
   margin-top: 1.5rem;
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--text-secondary);
   text-align: center;
   transform: rotate(-45deg);
   white-space: nowrap;
@@ -352,14 +352,14 @@ export default {
 
 .stat-label {
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
 }
 
 .stat-value {
   font-size: 1.875rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .positive-change {
@@ -375,7 +375,7 @@ export default {
 .loading {
   text-align: center;
   padding: 3rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .error {

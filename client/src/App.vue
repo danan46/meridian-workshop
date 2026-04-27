@@ -589,4 +589,68 @@ html.dark .section-title { color: var(--text-secondary); }
 
 /* Filter bar dark */
 html.dark .filters-bar { background: var(--bg-card); border-color: var(--border); }
+
+/* Modal containers */
+html.dark .modal-container { background: var(--bg-card); }
+html.dark .modal-header    { border-color: var(--border); }
+html.dark .modal-footer    { border-color: var(--border); }
+html.dark .modal-title     { color: var(--text-primary); }
+html.dark .modal-body      { color: var(--text-body); }
+html.dark .info-label      { color: var(--text-secondary); }
+html.dark .info-value      { color: var(--text-primary); }
+html.dark .summary-label   { color: var(--text-secondary); }
+html.dark .summary-value   { color: var(--text-primary); }
+html.dark .close-button    { color: var(--text-secondary); }
+html.dark .close-button:hover { background: var(--bg-hover); color: var(--text-primary); }
+html.dark .btn-secondary   { background: var(--bg-hover); border-color: var(--border); color: var(--text-table); }
+html.dark .item-name       { color: var(--text-primary); }
+html.dark .item-sku        { color: var(--text-secondary); }
+html.dark .cost-name       { color: var(--text-primary); }
+html.dark .cost-amount     { color: var(--text-primary); }
+html.dark .cost-percentage { color: var(--text-secondary); }
+html.dark .priority-badge.high   { background: rgba(239,68,68,0.15);   color: #fca5a5; }
+html.dark .priority-badge.medium { background: rgba(245,158,11,0.15);  color: #fcd34d; }
+html.dark .priority-badge.low    { background: rgba(59,130,246,0.15);  color: #93c5fd; }
+html.dark .stock-badge.success { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+html.dark .stock-badge.warning { background: rgba(245,158,11,0.15);  color: #fcd34d; }
+html.dark .stock-badge.danger  { background: rgba(239,68,68,0.15);   color: #fca5a5; }
+
+/* Charts & bars in dark */
+html.dark .bar-chart       { color: var(--text-secondary); }
+html.dark .y-axis          { color: var(--text-secondary); }
+html.dark .bar-label       { color: var(--text-secondary); }
+html.dark .chart-legend    { color: var(--text-secondary); }
+html.dark .legend-item     { color: var(--text-secondary); }
+html.dark .donut-center-label { fill: var(--text-secondary) !important; }
+html.dark .donut-center-value { fill: var(--text-primary)   !important; }
+
+/* Profile details modal */
+html.dark .detail-row      { border-color: var(--border); }
+html.dark .detail-label    { color: var(--text-secondary); }
+html.dark .detail-value    { color: var(--text-primary); }
+
+/* Tasks modal */
+html.dark .task-input      { background: var(--bg-base); border-color: var(--border); color: var(--text-primary); }
+html.dark .task-item       { border-color: var(--border); }
+html.dark .task-text       { color: var(--text-body); }
+html.dark .task-meta       { color: var(--text-secondary); }
+
+/* Category & spending bars */
+html.dark .category-name   { color: var(--text-primary); }
+html.dark .category-amount { color: var(--text-primary); }
+html.dark .category-meta   { color: var(--text-secondary); }
+
+/* Input fields globally */
+html.dark input[type="text"],
+html.dark input[type="number"],
+html.dark select,
+html.dark textarea {
+  background: var(--bg-base);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+/* Stat change chips */
+html.dark .stat-change { color: var(--text-secondary); }
+html.dark .stat-meta   { color: var(--text-secondary); }
 </style>

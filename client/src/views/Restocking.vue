@@ -246,7 +246,7 @@ export default {
 
 .budget-label {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary);
   white-space: nowrap;
 }
 
@@ -258,17 +258,17 @@ export default {
 
 .currency-prefix {
   font-size: 1rem;
-  color: #64748b;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
 .budget-input {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 0.938rem;
   width: 200px;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .budget-input:focus {
@@ -297,8 +297,8 @@ export default {
 }
 
 .btn-secondary {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--bg-hover);
+  color: var(--text-secondary);
 }
 
 .btn-secondary:hover {
@@ -332,7 +332,7 @@ export default {
 .empty-state {
   text-align: center;
   padding: 3rem;
-  color: #64748b;
+  color: var(--text-secondary);
   background: var(--bg-card);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
