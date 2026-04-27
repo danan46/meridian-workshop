@@ -325,7 +325,7 @@ export default {
 }
 
 .over-budget-row {
-  background: #fff7ed !important;
+  background: rgba(251,191,36,0.08) !important;
   opacity: 0.6;
 }
 
@@ -333,7 +333,7 @@ export default {
   text-align: center;
   padding: 3rem;
   color: #64748b;
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

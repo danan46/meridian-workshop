@@ -98,7 +98,7 @@ const selectLanguage = (locale) => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.875rem;
-  background: white;
+  background: var(--bg-card);
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   cursor: pointer;
@@ -137,7 +137,7 @@ const selectLanguage = (locale) => {
   top: calc(100% + 0.5rem);
   right: 0;
   min-width: 160px;
-  background: white;
+  background: var(--bg-card);
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);

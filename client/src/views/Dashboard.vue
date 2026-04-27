@@ -14,9 +14,12 @@
           <div class="kpi-card">
             <div class="kpi-header">
               <span class="kpi-label">{{ t('dashboard.kpi.inventoryTurnover') }}</span>
+              <span class="kpi-delta" :class="inventoryTurnover >= 4.5 ? 'delta-up' : 'delta-down'">
+                {{ inventoryTurnover >= 4.5 ? '▲' : '▼' }} {{ Math.abs((inventoryTurnover / 4.5 - 1) * 100).toFixed(1) }}%
+              </span>
             </div>
             <div class="kpi-value">{{ inventoryTurnover }}</div>
-            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 4.5 ({{ inventoryTurnover >= 4.5 ? '+' : '' }}{{ ((inventoryTurnover / 4.5 - 1) * 100).toFixed(1) }}%)</div>
+            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 4.5</div>
             <div class="kpi-progress-bar">
               <div class="kpi-progress" :style="{ width: Math.min((inventoryTurnover / 4.5 * 100), 100) + '%' }"></div>
             </div>
@@ -25,9 +28,12 @@
           <div class="kpi-card">
             <div class="kpi-header">
               <span class="kpi-label">{{ t('dashboard.kpi.ordersFulfilled') }}</span>
+              <span class="kpi-delta" :class="ordersData.fulfilled >= ordersData.goal ? 'delta-up' : 'delta-down'">
+                {{ ordersData.fulfilled >= ordersData.goal ? '▲' : '▼' }} {{ calculatePercentage(ordersData.fulfilled, ordersData.goal) }}%
+              </span>
             </div>
             <div class="kpi-value">{{ ordersData.fulfilled }}</div>
-            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: {{ ordersData.goal }} ({{ calculatePercentage(ordersData.fulfilled, ordersData.goal) }}%)</div>
+            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: {{ ordersData.goal }}</div>
             <div class="kpi-progress-bar">
               <div class="kpi-progress" :style="{ width: calculatePercentage(ordersData.fulfilled, ordersData.goal) + '%' }"></div>
             </div>
@@ -36,20 +42,26 @@
           <div class="kpi-card">
             <div class="kpi-header">
               <span class="kpi-label">{{ t('dashboard.kpi.orderFillRate') }}</span>
+              <span class="kpi-delta" :class="fillRate >= 95 ? 'delta-up' : 'delta-down'">
+                {{ fillRate >= 95 ? '▲' : '▼' }} {{ Math.abs(fillRate - 95).toFixed(1) }}%
+              </span>
             </div>
             <div class="kpi-value">{{ fillRate }}%</div>
-            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 95% ({{ fillRate - 95 > 0 ? '+' : '' }}{{ (fillRate - 95).toFixed(2) }}%)</div>
+            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 95%</div>
             <div class="kpi-progress-bar">
-              <div class="kpi-progress success" :style="{ width: (fillRate / 95 * 100) + '%' }"></div>
+              <div class="kpi-progress success" :style="{ width: Math.min((fillRate / 95 * 100), 100) + '%' }"></div>
             </div>
           </div>
 
           <div class="kpi-card">
             <div class="kpi-header">
               <span class="kpi-label">{{ t(selectedPeriod === 'all' ? 'dashboard.kpi.revenueYTD' : 'dashboard.kpi.revenueMTD') }}</span>
+              <span class="kpi-delta" :class="summary.total_orders_value >= revenueGoal ? 'delta-up' : 'delta-down'">
+                {{ summary.total_orders_value >= revenueGoal ? '▲' : '▼' }} {{ Math.abs((summary.total_orders_value / revenueGoal - 1) * 100).toFixed(1) }}%
+              </span>
             </div>
             <div class="kpi-value">{{ formatCurrency(Math.round(summary.total_orders_value), selectedCurrency) }}</div>
-            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: {{ formatCurrency(revenueGoal, selectedCurrency) }} ({{ summary.total_orders_value > revenueGoal ? '+' : '' }}{{ ((summary.total_orders_value / revenueGoal - 1) * 100).toFixed(1) }}%)</div>
+            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: {{ revenueGoalDisplay }}</div>
             <div class="kpi-progress-bar">
               <div class="kpi-progress" :style="{ width: Math.min((summary.total_orders_value / revenueGoal * 100), 100) + '%' }"></div>
             </div>
@@ -58,9 +70,12 @@
           <div class="kpi-card">
             <div class="kpi-header">
               <span class="kpi-label">{{ t('dashboard.kpi.avgProcessingTime') }}</span>
+              <span class="kpi-delta" :class="orderHealthMetrics.avgFulfillmentDays <= 3.0 ? 'delta-up' : 'delta-down'">
+                {{ orderHealthMetrics.avgFulfillmentDays <= 3.0 ? '▲' : '▼' }} {{ Math.abs(orderHealthMetrics.avgFulfillmentDays - 3.0).toFixed(1) }}d
+              </span>
             </div>
             <div class="kpi-value">{{ orderHealthMetrics.avgFulfillmentDays.toFixed(1) }}</div>
-            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 3.0 ({{ orderHealthMetrics.avgFulfillmentDays <= 3.0 ? '' : '+' }}{{ (orderHealthMetrics.avgFulfillmentDays - 3.0).toFixed(2) }})</div>
+            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 3.0 days</div>
             <div class="kpi-progress-bar">
               <div class="kpi-progress success" :style="{ width: Math.min((3.0 / Math.max(orderHealthMetrics.avgFulfillmentDays, 0.1) * 100), 100) + '%' }"></div>
             </div>
@@ -774,60 +789,99 @@ export default {
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
 }
 
 .kpi-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 0 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.kpi-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
 }
 
 .kpi-header {
-  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .kpi-label {
-  font-size: 0.813rem;
-  font-weight: 600;
-  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.07em;
 }
 
 .kpi-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.04em;
+  line-height: 1;
   margin-bottom: 0.5rem;
-  letter-spacing: -0.025em;
 }
 
 .kpi-goal {
-  font-size: 0.813rem;
-  color: #64748b;
-  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.875rem;
 }
 
 .kpi-progress-bar {
   width: 100%;
-  height: 6px;
-  background: #f1f5f9;
-  border-radius: 3px;
+  height: 4px;
+  background: var(--bg-hover);
+  border-radius: 9999px;
   overflow: hidden;
 }
 
 .kpi-progress {
   height: 100%;
-  background: #3b82f6;
-  border-radius: 3px;
-  transition: width 0.6s ease;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 9999px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .kpi-progress.success {
-  background: #10b981;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+}
+
+.kpi-delta {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.delta-up {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.delta-down {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
 }
 
 .charts-grid {
@@ -1206,8 +1260,8 @@ export default {
 }
 
 .task-item:hover {
-  border-color: #e2e8f0;
-  background: white;
+  border-color: var(--border);
+  background: var(--bg-hover);
 }
 
 .task-item.completed {

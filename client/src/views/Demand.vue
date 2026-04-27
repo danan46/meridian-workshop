@@ -232,7 +232,7 @@ export default {
 }
 
 .trend-card {
-  background: white;
+  background: var(--bg-card);
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 1.5rem;

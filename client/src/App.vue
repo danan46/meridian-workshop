@@ -566,4 +566,27 @@ html.dark tbody tr:hover  { background: var(--bg-hover); }
 html.dark .loading        { color: var(--text-secondary); }
 html.dark .error          { background: #450a0a; border-color: #991b1b; color: #fca5a5; }
 html.dark .table-container { color: var(--text-table); }
+
+/* Dropdowns (LanguageSwitcher, ProfileMenu) */
+html.dark .language-button,
+html.dark .profile-button { background: var(--bg-card); border-color: var(--border); color: var(--text-body); }
+html.dark .dropdown-menu,
+html.dark .profile-dropdown { background: var(--bg-card); border-color: var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+html.dark .dropdown-item,
+html.dark .profile-menu-item { color: var(--text-body); }
+html.dark .dropdown-item:hover,
+html.dark .profile-menu-item:hover { background: var(--bg-hover); }
+html.dark .dropdown-item.active { background: rgba(96,165,250,0.1); color: #60a5fa; }
+
+/* KPI cards dark text */
+html.dark .kpi-label  { color: var(--text-secondary); }
+html.dark .kpi-value  { color: var(--text-primary); }
+html.dark .kpi-goal   { color: var(--text-secondary); }
+html.dark .kpi-progress-bar { background: var(--bg-hover); }
+
+/* Section titles */
+html.dark .section-title { color: var(--text-secondary); }
+
+/* Filter bar dark */
+html.dark .filters-bar { background: var(--bg-card); border-color: var(--border); }
 </style>
