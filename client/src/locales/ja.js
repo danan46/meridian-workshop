@@ -316,6 +316,55 @@ export default {
     selectLanguage: '言語を選択'
   },
 
+  // Modals
+  modal: {
+    close: '閉じる',
+    inventoryDetail: {
+      title: '在庫品目詳細',
+      quantityOnHand: '手持在庫数',
+      stockLevel: '在庫レベル',
+      vsReorderPoint: '再注文点比',
+      units: '単位',
+      reorderPoint: '再注文点',
+      unitsRemaining: '残余数量',
+      unitCost: '単価',
+      totalValue: '総価値',
+      warehouse: '倉庫',
+      location: '場所',
+      category: 'カテゴリ',
+      status: 'ステータス'
+    },
+    backlogDetail: {
+      title: '在庫不足詳細',
+      prioritySuffix: '優先度',
+      shortageAmount: '不足量',
+      daysDelayed: '遅延日数',
+      orderId: '注文ID',
+      itemSku: '品目SKU',
+      quantityNeeded: '必要数量',
+      quantityAvailable: '在庫数量',
+      expectedDate: '予定日',
+      status: 'ステータス',
+      backordered: 'バックオーダー'
+    },
+    costDetail: {
+      titleSuffix: 'コスト内訳',
+      totalCosts: '総コスト',
+      ofTotal: '全体の%'
+    },
+    productDetail: {
+      title: '製品詳細',
+      category: 'カテゴリ',
+      warehouse: '倉庫',
+      unitsOrdered: '注文数量',
+      totalRevenue: '総収益',
+      currentStock: '現在在庫',
+      reorderPoint: '再注文点',
+      firstOrderDate: '初回注文日',
+      stockStatus: '在庫状況'
+    }
+  },
+
   // Backlog
   backlog: {
     title: 'バックログ管理',

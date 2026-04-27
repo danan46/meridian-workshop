@@ -29,6 +29,7 @@
             {{ t('nav.restocking') }}
           </router-link>
         </nav>
+        <ThemeToggle />
         <LanguageSwitcher />
         <ProfileMenu
           @show-profile-details="showProfileDetails = true"
@@ -67,6 +68,7 @@ import ProfileMenu from './components/ProfileMenu.vue'
 import ProfileDetailsModal from './components/ProfileDetailsModal.vue'
 import TasksModal from './components/TasksModal.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
+import ThemeToggle from './components/ThemeToggle.vue'
 
 export default {
   name: 'App',
@@ -75,7 +77,8 @@ export default {
     ProfileMenu,
     ProfileDetailsModal,
     TasksModal,
-    LanguageSwitcher
+    LanguageSwitcher,
+    ThemeToggle
   },
   setup() {
     const { currentUser } = useAuth()
@@ -165,6 +168,36 @@ export default {
 </script>
 
 <style>
+:root {
+  --bg-base:       #f8fafc;
+  --bg-card:       #ffffff;
+  --bg-hover:      #f1f5f9;
+  --bg-nav:        #ffffff;
+  --border:        #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text-primary:  #0f172a;
+  --text-secondary:#64748b;
+  --text-body:     #1e293b;
+  --text-table:    #334155;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.08);
+  --shadow-nav:    0 1px 3px 0 rgba(0,0,0,0.05);
+}
+
+html.dark {
+  --bg-base:       #0f172a;
+  --bg-card:       #1e293b;
+  --bg-hover:      #334155;
+  --bg-nav:        #1e293b;
+  --border:        #334155;
+  --border-strong: #475569;
+  --text-primary:  #f1f5f9;
+  --text-secondary:#94a3b8;
+  --text-body:     #e2e8f0;
+  --text-table:    #cbd5e1;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.4);
+  --shadow-nav:    0 1px 3px 0 rgba(0,0,0,0.3);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -173,10 +206,11 @@ export default {
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: #f8fafc;
-  color: #1e293b;
+  background: var(--bg-base);
+  color: var(--text-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .app {
@@ -186,9 +220,9 @@ body {
 }
 
 .top-nav {
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  background: var(--bg-nav);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-nav);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -220,53 +254,66 @@ body {
 
 .logo h1 {
   font-size: 1.375rem;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.025em;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+}
+
+html.dark .logo h1 {
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .subtitle {
   font-size: 0.813rem;
-  color: #64748b;
+  color: var(--text-secondary);
   font-weight: 400;
   padding-left: 0.75rem;
-  border-left: 1px solid #e2e8f0;
+  border-left: 1px solid var(--border);
 }
 
 .nav-tabs {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.125rem;
 }
 
 .nav-tabs a {
-  padding: 0.625rem 1.25rem;
-  color: #64748b;
+  padding: 0.5rem 1rem;
+  color: var(--text-secondary);
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.938rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  transition: all 0.15s ease;
   position: relative;
+  white-space: nowrap;
 }
 
 .nav-tabs a:hover {
-  color: #0f172a;
-  background: #f1f5f9;
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .nav-tabs a.active {
   color: #2563eb;
   background: #eff6ff;
+  font-weight: 600;
 }
 
 .nav-tabs a.active::after {
   content: '';
   position: absolute;
   bottom: -1px;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
   height: 2px;
-  background: #2563eb;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  border-radius: 2px 2px 0 0;
 }
 
 .main-content {
@@ -302,56 +349,67 @@ body {
 }
 
 .stat-card {
-  background: white;
-  padding: 1.25rem;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-card);
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
   transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.stat-card:hover::before { opacity: 1; }
 
 .stat-card:hover {
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-color: var(--border-strong);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
+.stat-card.warning::before  { background: linear-gradient(90deg, #f97316, #eab308); opacity: 1; }
+.stat-card.success::before  { background: linear-gradient(90deg, #10b981, #06b6d4); opacity: 1; }
+.stat-card.danger::before   { background: linear-gradient(90deg, #ef4444, #f97316); opacity: 1; }
+.stat-card.info::before     { background: linear-gradient(90deg, #3b82f6, #8b5cf6); opacity: 1; }
+
 .stat-label {
-  color: #64748b;
-  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.625rem;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
 }
 
 .stat-value {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.025em;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
-.stat-card.warning .stat-value {
-  color: #ea580c;
-}
-
-.stat-card.success .stat-value {
-  color: #059669;
-}
-
-.stat-card.danger .stat-value {
-  color: #dc2626;
-}
-
-.stat-card.info .stat-value {
-  color: #2563eb;
-}
+.stat-card.warning .stat-value { color: #ea580c; }
+.stat-card.success .stat-value { color: #059669; }
+.stat-card.danger .stat-value  { color: #dc2626; }
+.stat-card.info .stat-value    { color: #2563eb; }
 
 .card {
-  background: white;
-  border-radius: 10px;
+  background: var(--bg-card);
+  border-radius: 12px;
   padding: 1.25rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .card-header {
@@ -360,14 +418,14 @@ body {
   align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 0.875rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border);
 }
 
 .card-title {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
 .table-container {
@@ -380,44 +438,44 @@ table {
 }
 
 thead {
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--bg-hover);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 th {
   text-align: left;
-  padding: 0.5rem 0.75rem;
-  font-weight: 600;
-  color: #475569;
-  font-size: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
 }
 
 td {
-  padding: 0.5rem 0.75rem;
-  border-top: 1px solid #f1f5f9;
-  color: #334155;
+  padding: 0.625rem 0.875rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-table);
   font-size: 0.875rem;
 }
 
 tbody tr {
-  transition: background-color 0.15s ease;
+  transition: background-color 0.12s ease;
 }
 
 tbody tr:hover {
-  background: #f8fafc;
+  background: var(--bg-hover);
 }
 
 .badge {
   display: inline-block;
-  padding: 0.313rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.688rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.04em;
 }
 
 .badge.success {
@@ -486,4 +544,26 @@ tbody tr:hover {
   margin: 1rem 0;
   font-size: 0.938rem;
 }
+
+/* ── Dark mode overrides ───────────────────────────── */
+html.dark .card           { background: var(--bg-card); border-color: var(--border); }
+html.dark .stat-card      { background: var(--bg-card); border-color: var(--border); }
+html.dark .page-header h2 { color: var(--text-primary); }
+html.dark .page-header p  { color: var(--text-secondary); }
+html.dark .card-title     { color: var(--text-primary); }
+html.dark .stat-label     { color: var(--text-secondary); }
+html.dark .stat-value     { color: var(--text-primary); }
+html.dark .logo h1        { color: var(--text-primary); }
+html.dark .subtitle       { color: var(--text-secondary); border-color: var(--border); }
+html.dark .nav-tabs a     { color: var(--text-secondary); }
+html.dark .nav-tabs a:hover     { color: var(--text-primary); background: var(--bg-hover); }
+html.dark .nav-tabs a.active    { color: #60a5fa; background: rgba(96,165,250,0.1); }
+html.dark .nav-tabs a.active::after { background: #60a5fa; }
+html.dark thead           { background: var(--bg-hover); border-color: var(--border); }
+html.dark th              { color: var(--text-secondary); }
+html.dark td              { color: var(--text-table); border-color: var(--border); }
+html.dark tbody tr:hover  { background: var(--bg-hover); }
+html.dark .loading        { color: var(--text-secondary); }
+html.dark .error          { background: #450a0a; border-color: #991b1b; color: #fca5a5; }
+html.dark .table-container { color: var(--text-table); }
 </style>

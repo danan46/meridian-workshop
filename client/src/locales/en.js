@@ -316,6 +316,55 @@ export default {
     selectLanguage: 'Select Language'
   },
 
+  // Modals
+  modal: {
+    close: 'Close',
+    inventoryDetail: {
+      title: 'Inventory Item Details',
+      quantityOnHand: 'Quantity on Hand',
+      stockLevel: 'Stock Level',
+      vsReorderPoint: 'vs. reorder point',
+      units: 'units',
+      reorderPoint: 'Reorder Point',
+      unitsRemaining: 'Units Remaining',
+      unitCost: 'Unit Cost',
+      totalValue: 'Total Value',
+      warehouse: 'Warehouse',
+      location: 'Location',
+      category: 'Category',
+      status: 'Status'
+    },
+    backlogDetail: {
+      title: 'Inventory Shortage Details',
+      prioritySuffix: 'Priority',
+      shortageAmount: 'Shortage Amount',
+      daysDelayed: 'Days Delayed',
+      orderId: 'Order ID',
+      itemSku: 'Item SKU',
+      quantityNeeded: 'Quantity Needed',
+      quantityAvailable: 'Quantity Available',
+      expectedDate: 'Expected Date',
+      status: 'Status',
+      backordered: 'Backordered'
+    },
+    costDetail: {
+      titleSuffix: 'Cost Breakdown',
+      totalCosts: 'Total Costs',
+      ofTotal: '% of total'
+    },
+    productDetail: {
+      title: 'Product Details',
+      category: 'Category',
+      warehouse: 'Warehouse',
+      unitsOrdered: 'Units Ordered',
+      totalRevenue: 'Total Revenue',
+      currentStock: 'Current Stock',
+      reorderPoint: 'Reorder Point',
+      firstOrderDate: 'First Order Date',
+      stockStatus: 'Stock Status'
+    }
+  },
+
   // Backlog
   backlog: {
     title: 'Backlog Management',
